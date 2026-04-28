@@ -1,68 +1,54 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Card } from './ui/Card';
+import { View, Text, TouchableOpacity } from 'react-native';
+import CategoryIcon from './CategoryIcon';
+import { Expense } from '@/services/firebase/db';
 
 interface ExpenseItemProps {
-  category: string;
-  amount: string;
-  date: string;
-  note?: string;
-  type?: 'expense' | 'income';
+  expense: Expense;
+  onPress?: () => void;
 }
 
-const getCategoryIcon = (category: string) => {
-  switch (category.toLowerCase()) {
-    case 'food':
-      return { name: 'fast-food', color: '#f97316', bg: '#fff7ed' };
-    case 'travel':
-      return { name: 'airplane', color: '#06b6d4', bg: '#ecfeff' };
-    case 'shopping':
-      return { name: 'cart', color: '#8b5cf6', bg: '#f5f3ff' };
-    case 'entertainment':
-      return { name: 'game-controller', color: '#ec4899', bg: '#fdf2f8' };
-    case 'health':
-      return { name: 'medical', color: '#ef4444', bg: '#fef2f2' };
-    default:
-      return { name: 'cash', color: '#6366f1', bg: '#eef2ff' };
-  }
-};
-
-export const ExpenseItem: React.FC<ExpenseItemProps> = ({
-  category,
-  amount,
-  date,
-  note,
-  type = 'expense',
-}) => {
-  const icon = getCategoryIcon(category);
+export default function ExpenseItem({ expense, onPress }: ExpenseItemProps) {
+  const date = expense.date ? new Date(expense.date).toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  }) : '';
 
   return (
-    <Card className="flex-row items-center p-4 mb-3 border border-slate-100 shadow-none">
-      <View
-        style={{ backgroundColor: icon.bg }}
-        className="w-12 h-12 rounded-2xl items-center justify-center mr-4"
-      >
-        <Ionicons name={icon.name as any} size={24} color={icon.color} />
+    <TouchableOpacity 
+      onPress={onPress}
+      activeOpacity={0.7}
+      className="flex-row items-center bg-white p-5 rounded-[28px] mb-4 shadow-sm shadow-slate-200 border border-slate-50"
+    >
+      <View className="relative">
+        <CategoryIcon category={expense.category} size={22} />
       </View>
-      <View className="flex-1">
-        <Text className="text-secondary font-bold text-base capitalize">{category}</Text>
-        <Text className="text-muted text-xs mt-0.5">{date}</Text>
-        {note && (
-          <Text className="text-muted text-xs mt-1 italic" numberOfLines={1}>
-            {note}
-          </Text>
-        )}
+      
+      <View className="flex-1 ml-4">
+        <Text className="text-slate-900 font-bold text-lg leading-tight">{expense.category}</Text>
+        <View className="flex-row items-center mt-1">
+          <Text className="text-slate-400 text-xs font-medium uppercase tracking-wider">{date}</Text>
+          {expense.note && (
+            <>
+              <View className="w-1 h-1 bg-slate-300 rounded-full mx-2" />
+              <Text className="text-slate-500 text-xs flex-1" numberOfLines={1}>
+                {expense.note}
+              </Text>
+            </>
+          )}
+        </View>
       </View>
-      <View>
-        <Text
-          className={`text-lg font-bold ${
-            type === 'expense' ? 'text-danger' : 'text-accent'
-          }`}
-        >
-          {type === 'expense' ? '-' : '+'}₹{amount}
+      
+      <View className="items-end">
+        <Text className="text-slate-900 font-extrabold text-lg">
+          - ₹{expense.amount.toLocaleString('en-IN')}
         </Text>
+        <View className="px-2 py-0.5 bg-danger/10 rounded-full mt-1">
+          <Text className="text-danger text-[10px] font-bold uppercase">Debit</Text>
+        </View>
       </View>
-    </Card>
+    </TouchableOpacity>
   );
-};
+}
+

@@ -1,100 +1,82 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '@/hooks/useauth';
+import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { useAuthStore } from '@/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'expo-router';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { useAuthStore } from '@/store/authstore';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Profile() {
-  const router = useRouter();
-  const { logout } = useAuth();
-  const user = useAuthStore((state) => state.user);
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
+    const { user } = useAuthStore();
+    const { logout } = useAuth();
+    const router = useRouter();
 
-  const handleLogout = async () => {
-    await logout();
-    router.replace('/(auth)/login');
-  };
+    const handleLogout = async () => {
+        await logout();
+        router.replace("../(auth)/login");
+    };
 
-  const menuItems = [
-    { icon: 'notifications-outline', label: 'Notifications', value: 'On' },
-    { icon: 'shield-checkmark-outline', label: 'Security', value: null },
-    { icon: 'help-circle-outline', label: 'Help & Support', value: null },
-    { icon: 'information-circle-outline', label: 'About Mibu', value: 'v1.0.0' },
-  ];
+    const menuItems = [
+        { icon: 'person-outline', label: 'Edit Profile', color: '#6366f1' },
+        { icon: 'notifications-outline', label: 'Notifications', color: '#fbbf24' },
+        { icon: 'shield-checkmark-outline', label: 'Security', color: '#34d399' },
+        { icon: 'help-circle-outline', label: 'Help & Support', color: '#60a5fa' },
+    ];
 
-  return (
-    <SafeAreaView className="flex-1 bg-background">
-      <ScrollView className="px-6" showsVerticalScrollIndicator={false}>
-        <View className="py-6 items-center">
-            <Animated.View entering={FadeInDown.delay(200).duration(800)} className="items-center">
-                <View className="w-24 h-24 bg-primary/10 rounded-full items-center justify-center mb-4 border-4 border-white shadow-sm">
-                    <Text className="text-3xl font-bold text-primary">
-                        {user?.name?.[0]?.toUpperCase() || 'F'}
-                    </Text>
-                </View>
-                <Text className="text-2xl font-bold text-secondary">{user?.name || 'Faisal Ansari'}</Text>
-                <Text className="text-muted text-base">{user?.email || 'faisal@example.com'}</Text>
-                
-                <TouchableOpacity className="mt-4 px-6 py-2 bg-white rounded-full border border-slate-200 shadow-sm">
-                    <Text className="text-primary font-semibold">Edit Profile</Text>
-                </TouchableOpacity>
-            </Animated.View>
-        </View>
-
-        <Animated.View entering={FadeInDown.delay(400).duration(800)}>
-            <Text className="text-lg font-bold text-secondary mb-4 mt-4">Settings</Text>
-            <Card className="p-2 mb-6">
-                <View className="flex-row items-center justify-between p-4 border-b border-slate-50">
-                    <View className="flex-row items-center">
-                        <View className="bg-secondary/5 w-10 h-10 rounded-xl items-center justify-center mr-4">
-                            <Ionicons name="moon-outline" size={20} color="#1e293b" />
-                        </View>
-                        <Text className="text-secondary font-medium">Dark Mode</Text>
+    return (
+        <SafeAreaView className="flex-1 bg-secondary">
+            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                {/* Header Profile Section */}
+                <View className="px-6 pt-10 pb-12 bg-white rounded-b-4xl shadow-sm shadow-slate-100 items-center">
+                    <View className="w-32 h-32 bg-primary/10 rounded-full items-center justify-center border-4 border-white shadow-xl shadow-slate-200">
+                        {user?.photoURL ? (
+                            <Image source={{ uri: user.photoURL }} className="w-full h-full rounded-full" />
+                        ) : (
+                            <Text className="text-primary text-5xl font-bold">
+                                {user?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                            </Text>
+                        )}
                     </View>
-                    <Switch 
-                        value={isDarkMode} 
-                        onValueChange={setIsDarkMode}
-                        trackColor={{ false: '#e2e8f0', true: '#6366f1' }}
-                    />
+                    <Text className="text-slate-900 text-3xl font-bold mt-6">{user?.displayName || 'User Name'}</Text>
+                    <Text className="text-slate-500 text-lg mt-1">{user?.email}</Text>
+                    
+                    <TouchableOpacity className="mt-6 bg-slate-100 px-6 py-3 rounded-2xl flex-row items-center">
+                        <Ionicons name="pencil" size={18} color="#475569" />
+                        <Text className="ml-2 text-slate-600 font-bold">Edit Profile</Text>
+                    </TouchableOpacity>
                 </View>
 
-                {menuItems.map((item, index) => (
-                    <TouchableOpacity 
-                        key={index} 
-                        className={`flex-row items-center justify-between p-4 ${
-                            index === menuItems.length - 1 ? '' : 'border-b border-slate-50'
-                        }`}
-                    >
-                        <View className="flex-row items-center">
-                            <View className="bg-secondary/5 w-10 h-10 rounded-xl items-center justify-center mr-4">
-                                <Ionicons name={item.icon as any} size={20} color="#1e293b" />
-                            </View>
-                            <Text className="text-secondary font-medium">{item.label}</Text>
-                        </View>
-                        <View className="flex-row items-center">
-                            {item.value && (
-                                <Text className="text-muted text-sm mr-2">{item.value}</Text>
-                            )}
-                            <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
-                        </View>
-                    </TouchableOpacity>
-                ))}
-            </Card>
+                {/* Menu Items */}
+                <View className="px-6 mt-8">
+                    <View className="bg-white rounded-4xl p-2 shadow-sm shadow-slate-100">
+                        {menuItems.map((item, index) => (
+                            <TouchableOpacity 
+                                key={item.label} 
+                                className={`flex-row items-center justify-between p-5 ${index !== menuItems.length - 1 ? 'border-b border-slate-50' : ''}`}
+                            >
+                                <View className="flex-row items-center">
+                                    <View 
+                                        className="w-10 h-10 rounded-xl items-center justify-center"
+                                        style={{ backgroundColor: `${item.color}15` }}
+                                    >
+                                        <Ionicons name={item.icon as any} size={22} color={item.color} />
+                                    </View>
+                                    <Text className="ml-4 text-slate-700 text-lg font-medium">{item.label}</Text>
+                                </View>
+                                <Ionicons name="chevron-forward" size={20} color="#cbd5e1" />
+                            </TouchableOpacity>
+                        ))}
+                    </View>
 
-            <Button
-                title="Logout"
-                onPress={handleLogout}
-                variant="outline"
-                className="mb-10"
-                icon={<Ionicons name="log-out-outline" size={20} color="#6366f1" />}
-            />
-        </Animated.View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+                    {/* Logout Button */}
+                    <TouchableOpacity 
+                        onPress={handleLogout}
+                        className="mt-10 mb-20 bg-danger/10 py-5 rounded-3xl flex-row items-center justify-center"
+                    >
+                        <Ionicons name="log-out-outline" size={24} color="#ef4444" />
+                        <Text className="ml-3 text-danger font-bold text-xl">Logout</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    );
 }

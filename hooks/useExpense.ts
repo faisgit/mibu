@@ -1,5 +1,5 @@
 import { DBService, Expense } from "@/services/firebase/db";
-import { useAuthStore } from "@/store/authstore";
+import { useAuthStore } from "@/store/authStore";
 import { useExpenseStore } from "@/store/useExpenseStore"
 
 export const useExpense = () => {

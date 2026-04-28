@@ -1,5 +1,5 @@
 import { AuthService } from "@/services/firebase/auth";
-import { useAuthStore } from "@/store/authstore";
+import { useAuthStore } from "@/store/authStore";
 
 export const useAuth  =() => {
     const {setUser} = useAuthStore();
@@ -9,7 +9,7 @@ export const useAuth  =() => {
             if (authUser) {
                 setUser(authUser);
             }
-        } catch (error: any) {
+             } catch (error: any) {
             throw new Error(error.message)
         }
     }

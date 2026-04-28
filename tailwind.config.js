@@ -9,21 +9,23 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#6366f1",
-          light: "#818cf8",
-          dark: "#4f46e5",
+          DEFAULT: '#6366f1', // Indigo
+          light: '#818cf8',
+          dark: '#4f46e5',
         },
-        secondary: "#1e293b",
-        accent: "#10b981",
-        background: "#f8fafc",
-        card: "#ffffff",
-        danger: "#f43f5e",
-        muted: "#64748b",
+        secondary: '#f8fafc',
+        accent: '#f472b6', // Pink accent
+        success: '#22c55e',
+        danger: '#ef4444',
+        warning: '#f59e0b',
+        muted: '#64748b',
+        background: '#ffffff',
+        surface: '#f1f5f9',
       },
       borderRadius: {
-        '2xl': '1.25rem',
-        '3xl': '1.5rem',
-      },
+        '3xl': '24px',
+        '4xl': '32px',
+      }
     },
   },
   plugins: [],

@@ -1,12 +1,9 @@
-import { useAuth } from "@/hooks/useauth";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Text, View, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from "react-native";
+import { TextInput, TouchableOpacity, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
-import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+
 
 export default function Login() {
     const router = useRouter();
@@ -14,97 +11,77 @@ export default function Login() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async () => {
-        if (!email || !password) {
-            setError("Please fill in all fields");
-            return;
-        }
-        setLoading(true);
-        setError("");
+        if (!email || !password) return;
+        setIsLoading(true);
         try {
             await login(email, password);
-            router.replace("/(tabs)/home");
-        } catch (e: any) {
-            setError(e.message || "Failed to login");
+            router.replace("../(tabs)/home");
+        } catch (error) {
+            console.error(error);
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-background">
-            <KeyboardAvoidingView 
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                className="flex-1"
-            >
-                <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="px-6">
-                    <View className="flex-1 justify-center py-12">
-                        {/* Logo/Icon section */}
-                        <Animated.View 
-                            entering={FadeInUp.delay(200).duration(1000)}
-                            className="items-center mb-10"
-                        >
-                            <View className="w-20 h-20 bg-primary rounded-3xl items-center justify-center shadow-lg shadow-primary/30">
-                                <Ionicons name="wallet" size={40} color="white" />
-                            </View>
-                            <Text className="text-3xl font-bold text-secondary mt-4">Mibu</Text>
-                            <Text className="text-muted text-base mt-1">Track your expenses effortlessly</Text>
-                        </Animated.View>
-
-                        {/* Form Section */}
-                        <Animated.View 
-                            entering={FadeInDown.delay(400).duration(1000)}
-                            className="w-full"
-                        >
-                            <Text className="text-2xl font-bold text-secondary mb-6">Welcome Back</Text>
-                            
-                            <Input
-                                label="Email Address"
-                                placeholder="name@example.com"
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                icon={<Ionicons name="mail-outline" size={20} color="#64748b" />}
-                            />
-
-                            <Input
-                                label="Password"
-                                placeholder="••••••••"
-                                value={password}
-                                onChangeText={setPassword}
-                                secureTextEntry
-                                icon={<Ionicons name="lock-closed-outline" size={20} color="#64748b" />}
-                            />
-
-                            {error ? (
-                                <Text className="text-danger text-sm mb-4 ml-1">{error}</Text>
-                            ) : null}
-
-                            <TouchableOpacity className="self-end mb-6">
-                                <Text className="text-primary font-medium">Forgot Password?</Text>
-                            </TouchableOpacity>
-
-                            <Button 
-                                title="Login" 
-                                onPress={handleLogin} 
-                                loading={loading}
-                                className="mb-6"
-                            />
-
-                            <View className="flex-row justify-center items-center">
-                                <Text className="text-muted text-base">Don't have an account? </Text>
-                                <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
-                                    <Text className="text-primary font-bold text-base">Sign Up</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </Animated.View>
+        <SafeAreaView className="flex-1 bg-white">
+            <View className="flex-1 px-8 justify-center">
+                <View className="mb-12 items-center">
+                    <View className="w-20 h-20 bg-primary rounded-3xl items-center justify-center shadow-xl shadow-primary/30 mb-6">
+                        <Text className="text-white text-3xl font-bold italic">M</Text>
                     </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
+                    <Text className="text-4xl font-bold text-slate-900 tracking-tight">Welcome Back</Text>
+                    <Text className="text-slate-500 mt-2 text-lg">Sign in to Mibu to continue</Text>
+                </View>
+
+                <View className="space-y-5">
+                    <View>
+                        <Text className="text-slate-700 mb-2 font-semibold ml-1">Email Address</Text>
+                        <TextInput
+                            placeholder="name@example.com"
+                            value={email}
+                            onChangeText={setEmail}
+                            autoCapitalize="none"
+                            keyboardType="email-address"
+                            placeholderTextColor="#94a3b8"
+                            className="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-900 text-base"
+                        />
+                    </View>
+
+                    <View className="mt-4">
+                        <Text className="text-slate-700 mb-2 font-semibold ml-1">Password</Text>
+                        <TextInput
+                            placeholder="Enter your password"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                            placeholderTextColor="#94a3b8"
+                            className="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-slate-900 text-base"
+                        />
+                    </View>
+                </View>
+
+                <TouchableOpacity 
+                    onPress={handleLogin}
+                    disabled={isLoading}
+                    activeOpacity={0.8}
+                    className={`rounded-2xl py-5 mt-10 shadow-lg shadow-primary/40 ${isLoading ? 'bg-primary-light' : 'bg-primary'}`}
+                >
+                    <Text className="text-white text-center font-bold text-lg">
+                        {isLoading ? 'Signing In...' : 'Login'}
+                    </Text>
+                </TouchableOpacity>
+
+                <View className="flex-row justify-center mt-10">
+                    <Text className="text-slate-500 text-base">Don't have an account? </Text>
+                    <TouchableOpacity onPress={() => router.push("/register")}>
+                        <Text className="text-primary font-bold text-base">Register</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
         </SafeAreaView>
     );
 }
