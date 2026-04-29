@@ -31,7 +31,7 @@ export default function RootLayout() {
     if (!user && !inAuthGroup) {
       // Not logged in and not in the auth group -> go to login
       router.replace('/(auth)/login');
-    } else if (user && (inAuthGroup)) {
+    } else if (user && (inAuthGroup || !segments[0])) {
       // Logged in and in auth group or at root -> go to home
       router.replace('/(tabs)/home');
     }

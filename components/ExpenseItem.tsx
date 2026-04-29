@@ -9,7 +9,12 @@ interface ExpenseItemProps {
 }
 
 export default function ExpenseItem({ expense, onPress }: ExpenseItemProps) {
-  const date = expense.date ? new Date(expense.date).toLocaleDateString('en-IN', {
+  // Handle Firestore Timestamp vs Date object
+  const dateObj = expense.date && (expense.date as any).toDate 
+    ? (expense.date as any).toDate() 
+    : new Date(expense.date as any);
+
+  const date = !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('en-IN', {
     day: 'numeric',
     month: 'short',
     year: 'numeric'

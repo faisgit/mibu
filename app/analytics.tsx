@@ -23,7 +23,7 @@ export default function Analytics() {
         .sort(([, a], [, b]) => b - a);
 
     return (
-        <SafeAreaView className="flex-1 bg-secondary">
+        <SafeAreaView className="flex-1 bg-secondary" edges={['top']}>
             <View className="px-6 py-4 flex-row items-center bg-white">
                 <TouchableOpacity 
                     onPress={() => router.back()} 

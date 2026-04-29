@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, RefreshControl, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, RefreshControl, Image, FlatList, Modal, TextInput, Platform } from 'react-native';
 import { useAuthStore } from '@/store/authStore';
 import { useExpense } from '@/hooks/useExpense';
 import ExpenseItem from '@/components/ExpenseItem';
@@ -12,20 +12,50 @@ export default function Home() {
     const { user } = useAuthStore();
     const { expenses, fetchExpenses } = useExpense();
     const [refreshing, setRefreshing] = React.useState(false);
+    const [monthlyLimit, setMonthlyLimit] = React.useState(50000);
+    const [isLimitModalVisible, setIsLimitModalVisible] = React.useState(false);
+    const [newLimit, setNewLimit] = React.useState('');
     const router = useRouter();
 
     useEffect(() => {
         fetchExpenses();
+        loadUserProfile();
     }, []);
+
+    const loadUserProfile = async () => {
+        if (!user?.uid) return;
+        try {
+            const { DBService } = require("@/services/firebase/db");
+            const profile = await DBService.getUserProfile(user.uid);
+            if (profile?.monthlyLimit) {
+                setMonthlyLimit(profile.monthlyLimit);
+            }
+        } catch (error) {
+            console.error("Error loading profile:", error);
+        }
+    };
+
+    const handleUpdateLimit = async () => {
+        if (!newLimit || isNaN(Number(newLimit)) || !user?.uid) return;
+        try {
+            const { DBService } = require("@/services/firebase/db");
+            const limit = Number(newLimit);
+            await DBService.updateMonthlyLimit(user.uid, limit);
+            setMonthlyLimit(limit);
+            setIsLimitModalVisible(false);
+            setNewLimit('');
+        } catch (error) {
+            console.error("Error updating limit:", error);
+        }
+    };
 
     const onRefresh = async () => {
         setRefreshing(true);
-        await fetchExpenses();
+        await Promise.all([fetchExpenses(), loadUserProfile()]);
         setRefreshing(false);
     };
 
     const totalSpent = expenses.reduce((acc, curr) => acc + curr.amount, 0);
-    const monthlyLimit = 50000;
 
     const quickActions = [
         { id: '1', name: 'Add', icon: 'add', color: '#6366f1', route: '/add' },
@@ -35,7 +65,7 @@ export default function Home() {
     ];
 
     return (
-        <SafeAreaView className="flex-1 bg-[#fcfdfe]">
+        <SafeAreaView className="flex-1 bg-[#fcfdfe]" edges={['top']}>
             <ScrollView 
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -90,15 +120,24 @@ export default function Home() {
                             <View className="h-[1px] bg-white/20 my-8" />
 
                             <View className="flex-row justify-between">
-                                <View className="flex-row items-center">
+                                <TouchableOpacity 
+                                    onPress={() => {
+                                        setNewLimit(monthlyLimit.toString());
+                                        setIsLimitModalVisible(true);
+                                    }}
+                                    className="flex-row items-center"
+                                >
                                     <View className="w-10 h-10 bg-white/20 rounded-2xl items-center justify-center mr-3">
                                         <Ionicons name="trending-down-outline" size={18} color="white" />
                                     </View>
                                     <View>
-                                        <Text className="text-indigo-100 text-xs font-medium">Limit</Text>
+                                        <View className="flex-row items-center">
+                                            <Text className="text-indigo-100 text-xs font-medium mr-1">Limit</Text>
+                                            <Ionicons name="pencil" size={10} color="#e0e7ff" />
+                                        </View>
                                         <Text className="text-white font-bold text-base">₹{(monthlyLimit/1000).toFixed(0)}k</Text>
                                     </View>
-                                </View>
+                                </TouchableOpacity>
                                 <View className="flex-row items-center">
                                     <View className="w-10 h-10 bg-white/20 rounded-2xl items-center justify-center mr-3">
                                         <Ionicons name="pie-chart-outline" size={18} color="white" />
@@ -150,9 +189,12 @@ export default function Home() {
                     </View>
 
                     {expenses.length > 0 ? (
-                        expenses.slice(0, 10).map((expense) => (
-                            <ExpenseItem key={expense.id} expense={expense} />
-                        ))
+                        <FlatList
+                            data={expenses.slice(0, 3)}
+                            keyExtractor={(item) => item.id!}
+                            renderItem={({ item }) => <ExpenseItem expense={item} />}
+                            scrollEnabled={false}
+                        />
                     ) : (
                         <View className="items-center justify-center py-20 bg-white rounded-[40px] border border-dashed border-slate-200">
                             <View className="w-20 h-20 bg-slate-50 rounded-full items-center justify-center mb-6">
@@ -172,6 +214,63 @@ export default function Home() {
                     )}
                 </View>
             </ScrollView>
+            {/* Update Limit Modal */}
+            <Modal
+                visible={isLimitModalVisible}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setIsLimitModalVisible(false)}
+            >
+                <TouchableOpacity 
+                    activeOpacity={1} 
+                    onPress={() => setIsLimitModalVisible(false)}
+                    className="flex-1 bg-black/60 justify-center px-6"
+                >
+                    <TouchableOpacity 
+                        activeOpacity={1}
+                        onPress={(e) => e.stopPropagation()}
+                        className="bg-white rounded-[40px] p-8 shadow-2xl"
+                    >
+                        <View className="items-center mb-6">
+                            <View className="w-16 h-16 bg-primary/10 rounded-2xl items-center justify-center mb-4">
+                                <Ionicons name="wallet-outline" size={32} color="#6366f1" />
+                            </View>
+                            <Text className="text-slate-900 text-2xl font-bold">Update Budget</Text>
+                            <Text className="text-slate-500 mt-1">Set your monthly spending limit</Text>
+                        </View>
+
+                        <View className="bg-slate-50 rounded-3xl p-6 mb-8 border border-slate-100">
+                            <Text className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2 ml-1">Monthly Salary / Limit</Text>
+                            <View className="flex-row items-center">
+                                <Text className="text-slate-900 text-3xl font-black mr-2">₹</Text>
+                                <TextInput
+                                    className="text-slate-900 text-4xl font-black flex-1"
+                                    placeholder="0"
+                                    keyboardType="numeric"
+                                    value={newLimit}
+                                    onChangeText={setNewLimit}
+                                    autoFocus
+                                />
+                            </View>
+                        </View>
+
+                        <View className="flex-row space-x-4">
+                            <TouchableOpacity 
+                                onPress={() => setIsLimitModalVisible(false)}
+                                className="flex-1 bg-slate-100 py-5 rounded-2xl"
+                            >
+                                <Text className="text-slate-600 text-center font-bold text-lg">Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity 
+                                onPress={handleUpdateLimit}
+                                className="flex-1 bg-primary py-5 rounded-2xl shadow-lg shadow-primary/30"
+                            >
+                                <Text className="text-white text-center font-bold text-lg">Save</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </TouchableOpacity>
+                </TouchableOpacity>
+            </Modal>
         </SafeAreaView>
     );
 }

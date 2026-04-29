@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useAuthStore } from '@/store/authStore';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Profile() {
     const { user } = useAuthStore();
@@ -23,7 +24,7 @@ export default function Profile() {
     ];
 
     return (
-        <SafeAreaView className="flex-1 bg-secondary">
+        <SafeAreaView className="flex-1 bg-secondary" edges={['top']}>
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
                 {/* Header Profile Section */}
                 <View className="px-6 pt-10 pb-12 bg-white rounded-b-4xl shadow-sm shadow-slate-100 items-center">
