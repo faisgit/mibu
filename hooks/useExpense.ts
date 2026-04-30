@@ -1,18 +1,23 @@
 import { DBService, Expense } from "@/services/firebase/db";
 import { useAuthStore } from "@/store/authStore";
 import { useExpenseStore } from "@/store/useExpenseStore"
+import { useState } from "react";
 
 export const useExpense = () => {
     const {expenses, setExpenses} = useExpenseStore();
     const {user} = useAuthStore();
+    const [loading, setLoading] = useState(false);
 
     const fetchExpenses = async () => {
         if (!user?.uid) return;
         try {
+            setLoading(true);
             const expenses = await DBService.getExpenses(user.uid);
             setExpenses(expenses as Expense[]);
         } catch (error: any) {
             throw new Error(error.message)
+        } finally {
+            setLoading(false);
         }
     }
     const addExpense = async (data: Expense) => {
@@ -48,6 +53,7 @@ export const useExpense = () => {
         fetchExpenses,
         addExpense,
         updateExpense,
-        deleteExpense
+        deleteExpense,
+        loading
     }
 }

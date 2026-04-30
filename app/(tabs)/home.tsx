@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, RefreshControl, Image, FlatList, Modal, TextInput, Platform } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, RefreshControl, Image, FlatList, Modal, TextInput, Platform, ActivityIndicator } from 'react-native';
 import { useAuthStore } from '@/store/authStore';
 import { useExpense } from '@/hooks/useExpense';
 import ExpenseItem from '@/components/ExpenseItem';
@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 
 export default function Home() {
     const { user } = useAuthStore();
-    const { expenses, fetchExpenses } = useExpense();
+    const { expenses, fetchExpenses, loading } = useExpense();
     const [refreshing, setRefreshing] = React.useState(false);
     const [monthlyLimit, setMonthlyLimit] = React.useState(50000);
     const [isLimitModalVisible, setIsLimitModalVisible] = React.useState(false);
@@ -59,9 +59,9 @@ export default function Home() {
 
     const quickActions = [
         { id: '1', name: 'Add', icon: 'add', color: '#6366f1', route: '/add' },
-        { id: '2', name: 'Scan', icon: 'scan-outline', color: '#f472b6', route: '/add' },
+        { id: '2', name: 'Scan', icon: 'scan-outline', color: '#f472b6', route: '/add', disabled: true },
         { id: '3', name: 'Stats', icon: 'bar-chart-outline', color: '#fbbf24', route: '/analytics' },
-        { id: '4', name: 'Budget', icon: 'wallet-outline', color: '#22c55e', route: '/(tabs)/profile' },
+        { id: '4', name: 'Budget', icon: 'wallet-outline', color: '#22c55e', route: '/(tabs)/budget', disabled: true },
     ];
 
     return (
@@ -77,10 +77,11 @@ export default function Home() {
                 <View className="px-6 pt-4 pb-12 flex-row justify-between items-center bg-white rounded-b-[48px] shadow-sm shadow-slate-100">
                     <View className="flex-row items-center">
                         <View className="relative">
-                            <Image 
-                                source={{ uri: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop' }} 
-                                className="w-14 h-14 rounded-2xl"
-                            />
+                            <View className="w-14 h-14 bg-indigo-500 rounded-2xl items-center justify-center border-2 border-white/20">
+                                <Text className="text-white text-2xl font-black">
+                                    {(user?.displayName || 'F').charAt(0).toUpperCase()}
+                                </Text>
+                            </View>
                             <View className="absolute -bottom-1 -right-1 w-5 h-5 bg-success border-2 border-white rounded-full" />
                         </View>
                         <View className="ml-4">
@@ -88,10 +89,10 @@ export default function Home() {
                             <Text className="text-slate-900 text-xl font-bold">{user?.displayName || 'Faisal Ansari'}</Text>
                         </View>
                     </View>
-                    <TouchableOpacity className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-2xl items-center justify-center">
+                    {/* <TouchableOpacity className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-2xl items-center justify-center">
                         <Ionicons name="notifications-outline" size={24} color="#1e293b" />
                         <View className="absolute top-3 right-3 w-2 h-2 bg-danger rounded-full border border-white" />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
 
                 <View className="px-6 -mt-8">
@@ -159,14 +160,15 @@ export default function Home() {
                         {quickActions.map((action) => (
                             <TouchableOpacity 
                                 key={action.id}
-                                onPress={() => router.push(action.route as any)}
-                                className="items-center"
+                                onPress={() => !action.disabled && router.push(action.route as any)}
+                                disabled={action.disabled}
+                                className={`items-center ${action.disabled ? 'opacity-40' : ''}`}
                             >
                                 <View 
                                     className="w-16 h-16 rounded-3xl items-center justify-center shadow-sm shadow-slate-200 border border-white"
-                                    style={{ backgroundColor: `${action.color}10` }}
+                                    style={{ backgroundColor: action.disabled ? '#f1f5f9' : `${action.color}10` }}
                                 >
-                                    <Ionicons name={action.icon as any} size={28} color={action.color} />
+                                    <Ionicons name={action.icon as any} size={28} color={action.disabled ? '#94a3b8' : action.color} />
                                 </View>
                                 <Text className="text-slate-600 text-xs font-bold mt-2">{action.name}</Text>
                             </TouchableOpacity>
@@ -183,10 +185,16 @@ export default function Home() {
                                 <Text className="text-slate-500 text-[10px] font-bold uppercase">{expenses.length}</Text>
                             </View>
                         </View>
-                        <TouchableOpacity className="px-4 py-2 bg-slate-50 rounded-xl">
+                        <TouchableOpacity className="px-4 py-2 bg-slate-50 rounded-xl" onPress={() => router.push('../all-expenses-list-screen')}>
                             <Text className="text-primary font-bold text-sm">View All</Text>
                         </TouchableOpacity>
                     </View>
+
+                    {loading ? (
+                        <View className="items-center justify-center py-20 bg-white rounded-[40px] border border-dashed border-slate-200">
+                            <ActivityIndicator size="large" color="#6366f1" />
+                        </View>
+                    ) : null}
 
                     {expenses.length > 0 ? (
                         <FlatList

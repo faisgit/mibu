@@ -80,4 +80,15 @@ export class DBService {
             throw new Error(error.message)
         }
     }
+
+    static async updateUserProfile(userID: string, data: any) {
+        try {
+            await updateDoc(doc(db, "users", userID), {
+                ...data,
+                updatedAt: serverTimestamp(),
+            });
+        } catch (error: any) {
+            throw new Error(error.message)
+        }
+    }
 }
