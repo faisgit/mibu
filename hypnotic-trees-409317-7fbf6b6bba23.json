@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "hypnotic-trees-409317",
+  "private_key_id": "7fbf6b6bba235934d50e584e4b4ac0549029453f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDXOcCGjOLCZxBx\nVDzb/APmN9yoAnDBOQjz8tbEyh4+tnT+VrMDXIVS3NNKCeuyl8vSaEfN5+HMhHC0\nNFh9opkWJef770u9zpRgm2sMj4q/AA/2ss6w829LyP9mGCeBXSeuYGYtSfQe/RpO\nRRFw+j7A4ywi0052PHdkYoN+R9QYdW5RqX5eirc3pHmzzo+k5XtWkKfboZ92OOru\ncx0I+fJ5DbaC2z0TRfNQuQM005HYSxaCv1Yd+Un/T0IYr7eMEIripGTKLeJlJGLs\nhhtgtQjrY9G0aER8s6XvF8s9YJ5fNVTajNQ5dSg7vZ31wfDC9sfYvivYSZe2wNO0\nap7RUoZ3AgMBAAECggEAYQlc0E08/8FQHIiKV/SsHWQaTHWtOLDqZHKcemVWdZf1\n76ZPV7ijM9T0PnFynzbpYpg5p5BgscEUv2rKavqgYuf8TA5767v0EgqAnU0qlSsG\nB4hewFFBYL3iyLkjNqQ1e91itBCfzEj5T0i8sF9jY7wI7jqvKYfhnJT+DDV+Xvff\nEmWAF+ec2aO4U9RAn3Nv05EbXf2Ta7vmGYlK3DGAuJi7by8Ts8PRn/j8uVamX80f\n9u54uuSVSe3S2xySV8STJSrZmYwZguti7zeuI1hIkho1W+wRQmN86nqZvoqasW2u\nqO/iMCfeaxvZtXJYBOKtZ1scucnyEtH+IqaCYJBAoQKBgQD5hV0jkGDGFaJKfRjY\nw3W1wD3pr8J7anR6YYvmqp1wo9XbpdOvJCB0WVtHZ4pLbAzptFkWjvdBccodcwRK\nSM1i9uH4pkvA99QDtnJkFOgLp7iYdmz+InxYEX9eR9MNw4NAPDFbIhF6RcovpBeN\nsylSHacuyk90haxASR44fncEfQKBgQDc0GrUd/GNCXevIYfB3nSqHTG5tWk7C70T\nqUqQ8fS0whxE1y+Fl5xjCSgL1f18bfIBGu6nuJ4nnfRYhK69utVF2SHW8eU5Gu4b\niotenwWvuCgOqq70Bj1FW6Q9v6BEpKIsQ/0LXy19oA4S69jqpAAs+KsJNfskx3wM\nf/KQVYmtAwKBgQDPI0RHksKTjkAUwDbRM6nTAM0k4tB7bctWEQZ3ralXadrOJaJO\nYZpDnC5nX2/x3rf1hs7yKCrgfFsCCYpFNJy0DClZJov6nIG3t0zNAoIDsu9OOfmP\nGwfIgHYQyWVOpsCdoZqDgguqSqdm1zzqWBH0ZkN0V2SQYau2Djz1Px8EbQKBgQDI\nWjMUZWA+YADAXuQW/AlO8P5VSk0YziXY2RpXObKW8ClGLRlpVY8ILR6w3pEJfZi/\nd/hjJhgaSi+SwZDrhcJNhh42MXWSwuSZCLQ8Pn2iWq294RCtSZv+epAjluOMZPTg\nxS+sSce03KzobiZ7gCLIqzhFOz2MuZPMo6srWvF4kQKBgQDty8XtJgVzRwcJh16w\nQkvKMNcCwWJGV3Xh3J5OYPjxNoRfVUgux//40m0spBrV915UZqVwZZrrIOJRxRKv\njX4zOqNFg3Yc/gS0wgJc7F/zUgR6um5OjrCSYXJTl4OuOznG4xVRicjA4vkd6spH\nvpd1vLz7N2RO7nksuxkSOpU4tg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "expo-play-upload@hypnotic-trees-409317.iam.gserviceaccount.com",
+  "client_id": "110710334781973885064",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/expo-play-upload%40hypnotic-trees-409317.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

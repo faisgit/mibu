@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { TextInput, TouchableOpacity, Text, View } from "react-native";
+import { TextInput, TouchableOpacity, Text, View, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -14,13 +14,25 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async () => {
-        if (!email || !password) return;
+        if (!email.trim() || !password) {
+            Alert.alert("Error", "Please enter both email and password.");
+            return;
+        }
         setIsLoading(true);
         try {
             await login(email, password);
             router.replace("../(tabs)/home");
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
+            let errorMessage = "An unexpected error occurred. Please try again.";
+            
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                errorMessage = "Incorrect email or password.";
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            Alert.alert("Login Failed", errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -70,9 +82,11 @@ export default function Login() {
                     activeOpacity={0.8}
                     className={`rounded-2xl py-5 mt-10 shadow-lg shadow-primary/40 ${isLoading ? 'bg-primary-light' : 'bg-primary'}`}
                 >
-                    <Text className="text-white text-center font-bold text-lg">
-                        {isLoading ? 'Signing In...' : 'Login'}
-                    </Text>
+                    {isLoading ? <ActivityIndicator color="#fff" /> : (
+                        <Text className="text-white text-center font-bold text-lg">
+                            Login
+                        </Text>
+                    )}
                 </TouchableOpacity>
 
                 <View className="flex-row justify-center mt-10">
